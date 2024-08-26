@@ -10,20 +10,34 @@ import rigoImage from "../../img/rigo-baby.jpg";
 //create your first component
 const Home = () => {
   const [songList, setSongList] = useState([]);
-  const [currentSong, setCurrentSong] = useState("");
-  const [currentIndex, setCurrentIndex] = useState("");
 
-  const playSong = new Audio(currentSong);
+  const [currentIndex, setCurrentIndex] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  //const songIndexRef = useRef("");
+  const songUrl = useRef("");
+  const playSong = useRef("");
+
+  function controlPause() {
+    playSong.current.pause();
+  }
+  function playNewSong(e) {
+    controlPause();
+    songUrl.current = "https://playground.4geeks.com" + songList[e].url;
+    playSong.current.src = songUrl.current;
+    playSong.current.play();
+    console.log(songList);
+  }
+
+  function controlPlay() {
+    playSong.current.play();
+  }
 
   useEffect(() => {
     getSongs();
+    playSong.current = new Audio("");
+    console.log("loaded page");
   }, []);
-
-  const getURL = (e) => {
-    //console.log(songList[0]);
-    setCurrentSong("https://playground.4geeks.com" + songList[e].url);
-    console.log(currentSong);
-  };
 
   function getSongs() {
     const URL = "https://playground.4geeks.com/sound/songs";
@@ -45,8 +59,11 @@ const Home = () => {
           <NavBar />
           <AudioPlayer
             songlist={songList}
-            geturl={getURL}
+            geturl={playNewSong}
             setIndex={setCurrentIndex}
+            songUrl={songUrl}
+            setIsPlaying={setIsPlaying}
+            index={currentIndex}
           />
         </div>
       </div>
@@ -54,7 +71,12 @@ const Home = () => {
         songlist={songList}
         playsong={playSong}
         index={currentIndex}
-        geturl={getURL}
+        geturl={playNewSong}
+        setIndex={setCurrentIndex}
+        controlPause={controlPause}
+        controlPlay={controlPlay}
+        setIsPlaying={setIsPlaying}
+        isPlaying={isPlaying}
       />
     </div>
   );
